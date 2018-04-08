@@ -11,6 +11,8 @@ QT       -= gui
 TARGET = shower
 CONFIG   += console
 CONFIG   -= app_bundle
+QMAKE_CXXFLAGS += -pg
+QMAKE_LFLAGS += -pg
 
 TEMPLATE = app
 

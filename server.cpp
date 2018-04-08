@@ -1,10 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <signal.h>
+#include <sys/types.h>
 
 extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libswscale/swscale.h>
+#include <libavutil/opt.h>
 }
 
 #include "capture.h"
@@ -19,14 +22,28 @@ extern "C" {
  */
 #define VIDEO_WIDTH 640 
 #define VIDEO_HEIGHT 480 
-#define VIDEO_FPS 20.0
+#define VIDEO_FPS 7.0
 
 #define TARGET_IP "127.0.0.1"
 #define TARGET_PORT 3020
 
+
+
+
+static void sighandler(int sig_no)
+{
+	printf("user kill\n");
+	exit(0);
+}
+
+
+
 int main (void)
 {
 	int ret;
+
+	signal(SIGUSR1, sighandler);
+
 	void *capture = capture_open("/dev/video0", 
 			VIDEO_WIDTH, VIDEO_HEIGHT,
 			AV_PIX_FMT_YUV422P);
@@ -81,7 +98,7 @@ int main (void)
 	//dec->frame_number = 1; //每包一个视频帧  
 	//dec->codec_type = AVMEDIA_TYPE_VIDEO;  
 	//dec->bit_rate = 0;  
-	dec->time_base.den = 30;//帧率
+	//dec->time_base.den = 30;//帧率
 	dec->codec_id = AV_CODEC_ID_H264;
 	dec->width = 640;//视频宽  
 	dec->height = 480;//视频高 
@@ -121,6 +138,10 @@ int main (void)
 	const void *outdata;
 	int outlen, rc;
 	uint8_t * codec_data = NULL;
+
+
+//	av_opt_set(dec->priv_data, "preset", "superfast", 0);
+	av_opt_set(dec->priv_data, "tune", "zerolatency", 0);
 
 	for (; ; )
 	{
@@ -195,9 +216,8 @@ int main (void)
 			}
 		}
 		// 等
-		usleep(1000);
 #endif
-		usleep(1000);
+		//usleep(tosleep);
 
 	}
 
