@@ -46,7 +46,7 @@ int main (void)
 
 	void *capture = capture_open("/dev/video0", 
 			VIDEO_WIDTH, VIDEO_HEIGHT,
-			AV_PIX_FMT_YUV422P);
+			AV_PIX_FMT_YUV420P);
 	if (!capture)
 	{
 		fprintf(stderr, "ERR: can't open '/dev/video0'\n");
@@ -102,9 +102,9 @@ int main (void)
 	dec->codec_id = AV_CODEC_ID_H264;
 	dec->width = 640;//视频宽  
 	dec->height = 480;//视频高 
-	dec->pix_fmt = AV_PIX_FMT_YUV422P;
+	dec->pix_fmt = AV_PIX_FMT_YUV420P;
 
-	int num_bytes = avpicture_get_size(AV_PIX_FMT_YUV422P, 640, 480);
+	int num_bytes = avpicture_get_size(AV_PIX_FMT_YUV420P, 640, 480);
 	uint8_t *avbuf = (uint8_t*)malloc(num_bytes);
 	if (avbuf == NULL)
 	{
@@ -119,7 +119,7 @@ int main (void)
 		return -1;
 	}
 
-	avpicture_fill((AVPicture *)frame, avbuf, AV_PIX_FMT_YUV422P, 680, 480);
+	avpicture_fill((AVPicture *)frame, avbuf, AV_PIX_FMT_YUV420P, 680, 480);
 
 	if(codec->capabilities & AV_CODEC_CAP_TRUNCATED)
 		dec->flags |= AV_CODEC_FLAG_TRUNCATED;
