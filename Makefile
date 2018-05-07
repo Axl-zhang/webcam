@@ -1,7 +1,7 @@
 CXX = g++
 CFLAGS =`pkg-config --cflags opencv` -Wall -g -O3
-LIBS = `pkg-config --libs opencv` -L./build/lib/
-INCLUDE = -I./ -I./build/include
+LIBS = `pkg-config --libs opencv` -L./common/lib/
+INCLUDE = -I./ -I./common/include
 
 
 OBJS_SERVER = capture.o vcompress.o sender.o server.o vshow.o

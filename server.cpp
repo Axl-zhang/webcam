@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <sys/types.h>
+#include <sys/time.h>
 
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -143,20 +144,30 @@ int main (void)
 //	av_opt_set(dec->priv_data, "preset", "superfast", 0);
 	av_opt_set(dec->priv_data, "tune", "zerolatency", 0);
 
+	int interval;
+	struct timeval start, end;
+	Picture pic;
+
 	for (; ; )
 	{
 		// 抓
-		Picture pic;
 		capture_get_picture(capture, &pic);
 
+
+		gettimeofday(&start, NULL);	
 		// 压
 		rc = vc_compress(encoder, pic.data, pic.stride, &outdata, &outlen);
 		if (rc < 0)
 			continue;
+		gettimeofday(&end, NULL);
+		interval = 1000000*(end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec);
+		printf("time interval = %fms\n", interval/1000.0);
+
 
 		printf("encode data len:%d\n", outlen);
 		// 发
 		sender_send(sender, outdata, outlen);
+
 		codec_data = (uint8_t *)outdata;
 #if 1 
 		// 解压
